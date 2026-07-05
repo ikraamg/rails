@@ -76,7 +76,8 @@ module ActiveModel
       end
 
       def attribute_changed?(attr_name)
-        forced_changes.include?(attr_name) || !!attributes[attr_name].changed?
+        forced_changes.include?(attr_name) ||
+          (attributes.materialized?(attr_name) && !!attributes[attr_name].changed?)
       end
 
       def fetch_value(attr_name)

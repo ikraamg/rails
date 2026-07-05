@@ -186,6 +186,38 @@ module ActiveModel
       assert_equal 1, attributes.fetch_value(:foo)
     end
 
+    test "materialized? is false for an untouched value-present name" do
+      builder = AttributeSet::Builder.new(foo: Type::Integer.new)
+      attributes = builder.build_from_database(foo: "1")
+
+      assert_not attributes.materialized?(:foo)
+    end
+
+    test "materialized? is true once a value-present name has been read" do
+      builder = AttributeSet::Builder.new(foo: Type::Integer.new)
+      attributes = builder.build_from_database(foo: "1")
+
+      attributes.fetch_value(:foo)
+
+      assert attributes.materialized?(:foo)
+    end
+
+    test "materialized? is true once a name has been written" do
+      builder = AttributeSet::Builder.new(foo: Type::Integer.new)
+      attributes = builder.build_from_database(foo: "1")
+
+      attributes.write_from_user(:foo, 2)
+
+      assert attributes.materialized?(:foo)
+    end
+
+    test "materialized? reflects membership for an eagerly built attribute set" do
+      attributes = AttributeSet.new(foo: Attribute.from_database(:foo, 1, Type::Integer.new))
+
+      assert attributes.materialized?(:foo)
+      assert_not attributes.materialized?(:bar)
+    end
+
     test "fetch_value returns nil for unknown attributes" do
       attributes = attributes_with_uninitialized_key
       assert_nil attributes.fetch_value(:wibble) { "hello" }

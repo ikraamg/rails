@@ -42,6 +42,10 @@ module ActiveModel
       names
     end
 
+    def materialized?(name)
+      @attributes.key?(name) || @casted_values.key?(name)
+    end
+
     def fetch_value(name, &block)
       if attr = @attributes[name]
         return attr.value(&block)

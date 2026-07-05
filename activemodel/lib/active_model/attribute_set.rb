@@ -47,6 +47,10 @@ module ActiveModel
       attributes.each_key.select { |name| self[name].initialized? }
     end
 
+    def materialized?(name)
+      @attributes.key?(name)
+    end
+
     def fetch_value(name, &block)
       self[name].value(&block)
     end
